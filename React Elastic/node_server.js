@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 const path = require('path');
 const elasticsearch = require('elasticsearch')
 const cors = require('cors')
+const dotenv = require('dotenv')
+dotenv.config()
 
 // Set up Elastic Search Client
 const bonsai_url = process.env.BONSAI_URL;
@@ -43,7 +45,11 @@ function searchRoles(req, res, next) {
         body: req.body,
         index: 'roledefs'
       })
-        .then((e) => {console.log(e); res.json(e)})
+        .then((e) => {
+          console.log("Elastic Search: ", e.hits.hits)
+          res.json(e.hits.hits)
+        })
+        // .then((e) => {console.log(e); res.json(e)})
         .catch((c) => {console.log(c); res.json(c)});
       // axios.default.get(bonsai_url + "/_search?pretty", {
       //   data: req.body,
@@ -55,6 +61,8 @@ function searchRoles(req, res, next) {
   } catch (err) {
     console.log(err.message);
   }
+
+  // next()
 }
 
 app.get('/searchRoles', function (req, res, next) { searchRoles(req, res, next); });
