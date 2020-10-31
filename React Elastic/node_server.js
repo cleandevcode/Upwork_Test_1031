@@ -2,12 +2,12 @@ const fs = require('fs');
 
 const express = require('express');
 const app = express();
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 const path = require('path');
-const elasticsearch = require('elasticsearch')
-const cors = require('cors')
-const dotenv = require('dotenv')
-dotenv.config()
+const elasticsearch = require('elasticsearch');
+const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
 
 // Set up Elastic Search Client
 const bonsai_url = process.env.BONSAI_URL;
@@ -41,16 +41,21 @@ function searchRoles(req, res, next) {
     {
       console.log('searchRoles');
       console.log(req.body);
-      client.search({
-        body: req.body,
-        index: 'roledefs'
-      })
-        .then((e) => {
-          console.log("Elastic Search: ", e.hits.hits)
-          res.json(e.hits.hits)
+      client
+        .search({
+          body: req.body,
+          index: 'roledefs'
+        })
+        .then(e => {
+          let items = [];
+          e.hits.hits.map(item => items.push(item._source));
+          res.json(items);
         })
         // .then((e) => {console.log(e); res.json(e)})
-        .catch((c) => {console.log(c); res.json(c)});
+        .catch(c => {
+          console.log(c);
+          res.json(c);
+        });
       // axios.default.get(bonsai_url + "/_search?pretty", {
       //   data: req.body,
       //   method: 'GET',
@@ -65,11 +70,15 @@ function searchRoles(req, res, next) {
   // next()
 }
 
-app.get('/searchRoles', function (req, res, next) { searchRoles(req, res, next); });
-app.get('/*', function (req, res, next) { fetch_fn(req, res, next); });
+app.get('/searchRoles', function(req, res, next) {
+  searchRoles(req, res, next);
+});
+app.get('/*', function(req, res, next) {
+  fetch_fn(req, res, next);
+});
 
-var listenPort = process.env.PORT || 3000
+var listenPort = process.env.PORT || 3000;
 
-app.listen(listenPort, function () {
-  console.log('Listening Port:', listenPort)
+app.listen(listenPort, function() {
+  console.log('Listening Port:', listenPort);
 });

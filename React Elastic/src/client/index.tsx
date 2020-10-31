@@ -5,6 +5,9 @@ import { ThemeProvider } from '@friendsofreactjs/react-css-themr';
 import MainRouter from 'Route';
 // import {DeliciousThemeContext} from 'engage-ui/themes/Delicious/index';
 
+import store from './store'
+import { Provider } from "react-redux";
+
 export const DeliciousThemeContext = {
   PButton: require('engage-ui/themes/Delicious/Button.scss'),
   PButtonGroup: require('engage-ui/themes/Delicious/ButtonGroup.scss'),
@@ -21,9 +24,11 @@ export const DeliciousThemeContext = {
 
 const content = (
   // @ts-ignore
+  <Provider store={store}>
   <ThemeProvider theme={DeliciousThemeContext}>
     <MainRouter />
   </ThemeProvider>
+  </Provider>
 );
 
 /**

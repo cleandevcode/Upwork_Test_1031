@@ -53,6 +53,13 @@ class RoleListComponent extends React.Component<RoleListProp, RoleListState> {
   */
   private nestedColumnConfig: Array<{}> = [
     {
+      label: 'ID',
+      key: 'id',
+      className: '',
+      sortBy: 'keyword',
+      style: { width: '100px' },
+    },
+    {
       label: 'Name',
       key: 'name',
       className: '',
@@ -82,7 +89,7 @@ class RoleListComponent extends React.Component<RoleListProp, RoleListState> {
   // function needs to be called on onChange for checkBox
   private bulkOptions = () => {
     return [{
-      content: <Checkbox label={'Show Deleted'} />
+      content: <Checkbox label={'Show Deleted'} checked={this.state.filterConfig.search} onChange={this.onSelect.bind(this)} />
     }]
   };
 
@@ -122,7 +129,26 @@ class RoleListComponent extends React.Component<RoleListProp, RoleListState> {
     });
   }
 
+  onChange(event) {
+    this.props.onChange(event, this.state.filterConfig.search)
+    this.setState(prevState=>({
+      filterConfig: {
+        ...prevState.filterConfig,
+        searchKey: event
+      }
+    }))
+  
+  }
 
+  onSelect(event) {
+    this.props.onChange(this.state.filterConfig.searchKey, event)
+    this.setState(prevState=>({
+      filterConfig: {
+        ...prevState.filterConfig,
+        search: event
+      }
+    }))
+  }
   /**
    * Render the component to the DOM
    * @returns {}
@@ -176,10 +202,10 @@ class RoleListComponent extends React.Component<RoleListProp, RoleListState> {
 
               <div className={searchFieldStyle}>
                 <TextField
-                  disabled
                   label="Find a Role..."
                   suffix={<Icon source="search" componentColor="inkLighter"/>}
                   value={filterConfig.searchKey}
+                  onChange={this.onChange.bind(this)}
                 />
               </div>
 
@@ -199,7 +225,7 @@ class RoleListComponent extends React.Component<RoleListProp, RoleListState> {
             </FlexBox>
 
             {
-              roleDefs ?
+              roleDefs && roleDefs.length > 0  ?
                 <Table
                   actionInProgress={actionInProgress}
                   columnFirstChildWidth="25px"
